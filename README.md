@@ -8,3 +8,7 @@ migrate -database ${POSTGRESQL_URL} -path graph/postgres/migrations up
 
 Create table users
 migrate create -ext sql -dir postgres/migrations create_users
+
+Dataloden library
+go get github.com/vektah/dataloaden
+go run github.com/vektah/dataloaden UserLoader string '*com.example/graphql/graph/model.User'

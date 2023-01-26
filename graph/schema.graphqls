@@ -2,6 +2,8 @@
 #
 # https://gqlgen.com/getting-started/
 
+# go run github.com/99designs/gqlgen
+
 type User {
   id: ID!
   username: String!
@@ -18,6 +20,7 @@ type Meetup {
 
 type Query {
   meetups: [Meetup!]!
+  user(id: ID!): User!
 }
 
 input NewMeetup {
@@ -25,6 +28,15 @@ input NewMeetup {
   description: String!
 }
 
+input UpdateMeetup {
+  name: String
+  description: String
+}
+
 type Mutation {
   createMeetup(input: NewMeetup!): Meetup!
+  updateMeetup(id: ID!, input: UpdateMeetup!): Meetup!
+  deleteMeetup(id: ID!): Boolean!
 }
+
+

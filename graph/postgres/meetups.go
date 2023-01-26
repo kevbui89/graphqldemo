@@ -11,7 +11,7 @@ type MeetupsRepo struct {
 
 func (m *MeetupsRepo) GetMeetups() ([]*model.Meetup, error) {
 	var meetups []*model.Meetup
-	err := m.DB.Model(&meetups).Select()
+	err := m.DB.Model(&meetups).Order("id").Select()
 	if err != nil {
 		return nil, err
 	}
@@ -24,4 +24,26 @@ func (m *MeetupsRepo) CreateMeetup(meetup *model.Meetup) (*model.Meetup, error) 
 		return &model.Meetup{}, nil
 	}
 	return meetup, err
+}
+
+func (m *MeetupsRepo) GetById(id string) (*model.Meetup, error) {
+	var meetup model.Meetup
+	err := m.DB.Model(&meetup).Where("id = ?", id).First()
+	return &meetup, err
+}
+
+func (m *MeetupsRepo) Update(meetup *model.Meetup) (*model.Meetup, error) {
+	_, err := m.DB.Model(meetup).Where("id = ?", meetup.ID).Update()
+	return meetup, err
+}
+
+func (m *MeetupsRepo) Delete(meetup *model.Meetup) error {
+	_, err := m.DB.Model(meetup).Where("id = ?", meetup.ID).Delete()
+	return err
+}
+
+func (m *MeetupsRepo) GetMeetupsForUser(user *model.User) ([]*model.Meetup, error) {
+	var meetups []*model.Meetup
+	err := m.DB.Model(&meetups).Where("user_id = ?", user.ID).Order("id").Select()
+	return meetups, err
 }

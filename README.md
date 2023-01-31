@@ -15,3 +15,9 @@ go run github.com/99designs/gqlgen
 # Dataloden library
 go get github.com/vektah/dataloaden
 go run github.com/vektah/dataloaden UserLoader string '*com.example/graphql/graph/model.User'
+
+# Run application
+go run ./graph/server/server.go
+
+# Regenerate Tables
+go generate ./...

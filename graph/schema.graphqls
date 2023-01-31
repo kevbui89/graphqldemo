@@ -19,7 +19,7 @@ type Meetup {
 }
 
 type Query {
-  meetups: [Meetup!]!
+  meetups(filter: MeetupFilter, limit: Int = 10, offset: Int = 0): [Meetup!]!
   user(id: ID!): User!
 }
 
@@ -31,6 +31,10 @@ input NewMeetup {
 input UpdateMeetup {
   name: String
   description: String
+}
+
+input MeetupFilter {
+  name: String
 }
 
 type Mutation {

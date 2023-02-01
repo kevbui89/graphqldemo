@@ -4,11 +4,17 @@
 
 # go run github.com/99designs/gqlgen
 
+scalar Time
+
 type User {
   id: ID!
   username: String!
   email: String!
+  firstName: String!
+  lastName: String!
   meetups: [Meetup!]!
+  createdAt: Time!
+  updatedAt: Time!
 }
 
 type Meetup {
@@ -16,6 +22,25 @@ type Meetup {
   name: String!
   description: String!
   user_id: User!
+}
+
+type AuthToken {
+  accessToken: String!
+  expiredAt: Time!
+}
+
+type AuthResponse {
+  authToken: AuthToken!
+  user: User!
+}
+
+input RegisterInput {
+  username: String!
+  email: String!
+  password: String!
+  confirmPassword: String!
+  firstName: String!
+  lastName: String!
 }
 
 type Query {
@@ -38,6 +63,7 @@ input MeetupFilter {
 }
 
 type Mutation {
+  register(input: RegisterInput!): AuthResponse
   createMeetup(input: NewMeetup!): Meetup!
   updateMeetup(id: ID!, input: UpdateMeetup!): Meetup!
   deleteMeetup(id: ID!): Boolean!

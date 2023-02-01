@@ -21,3 +21,7 @@ go run ./graph/server/server.go
 
 # Regenerate Tables
 go generate ./...
+
+# GitHub libraries
+go get github.com/go-chi/chi
+go get github.com/rs/cors

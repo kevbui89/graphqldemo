@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 
 	"com.example/graphql/graph/model"
 )
@@ -84,4 +85,60 @@ func (r *mutationResolver) DeleteMeetup(ctx context.Context, id string) (bool, e
 	}
 
 	return true, nil
+}
+
+// Register is the resolver for the register field.
+func (m *mutationResolver) Register(ctx context.Context, input model.RegisterInput) (*model.AuthResponse, error) {
+	_, err := m.UsersRepo.GetUserByEmail(input.Email)
+	if err == nil {
+		return nil, errors.New("email already in used")
+	}
+
+	_, err = m.UsersRepo.GetUserByUsername(input.Username)
+	if err == nil {
+		return nil, errors.New("username already in used")
+	}
+
+	user := &model.User{
+		Username:  input.Username,
+		Email:     input.Email,
+		FirstName: input.FirstName,
+		LastName:  input.LastName,
+	}
+
+	err = user.HashPassword(input.Password)
+	if err != nil {
+		log.Printf("error while hashing password: %v", err)
+		return nil, errors.New("something went wrong 1")
+	}
+
+	// TODO: create verification code
+
+	tx, err := m.UsersRepo.DB.Begin()
+	if err != nil {
+		log.Printf("error creating a transaction: %v", err)
+		return nil, errors.New("something went wrong 2")
+	}
+	defer tx.Rollback()
+
+	if _, err := m.UsersRepo.CreateUser(tx, user); err != nil {
+		log.Printf("error creating a user: %v", err)
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		log.Printf("error while commiting: %v", err)
+		return nil, err
+	}
+
+	token, err := user.GenToken()
+	if err != nil {
+		log.Printf("error while generating the token: %v", err)
+		return nil, errors.New("something went wrong 3")
+	}
+
+	return &model.AuthResponse{
+		AuthToken: token,
+		User:      user,
+	}, nil
 }

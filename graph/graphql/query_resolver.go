@@ -8,12 +8,12 @@ import (
 
 // Meetups is the resolver for the meetups field.
 func (r *queryResolver) Meetups(ctx context.Context, filter *model.MeetupFilter, limit *int, offset *int) ([]*model.Meetup, error) {
-	return r.MeetupsRepo.GetMeetups(filter, limit, offset)
+	return r.Domain.MeetupsRepo.GetMeetups(filter, limit, offset)
 }
 
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
-	return r.UsersRepo.GetUserById(id)
+	return r.Domain.UsersRepo.GetUserById(id)
 }
 
 // Query returns QueryResolver implementation.

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"com.example/graphql/graph/domain"
 	"com.example/graphql/graph/graphql"
 	graph "com.example/graphql/graph/graphql"
 	custommiddleware "com.example/graphql/graph/middleware"
@@ -48,16 +49,17 @@ func main() {
 	router.Use(middleware.Logger)
 	router.Use(custommiddleware.AuthMiddleware(userRepo))
 
+	d := domain.NewDomain(userRepo, postgres.MeetupsRepo{DB: DB})
+
 	// The repositories need to be injected in the Resolver
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
-		MeetupsRepo: postgres.MeetupsRepo{DB: DB},
-		UsersRepo:   userRepo,
+		Domain: d,
 	}}))
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	// http.Handle("/query", srv)
-	http.Handle("/query", graphql.DataLoaderMiddleware(DB, srv))
+	router.Handle("/query", graphql.DataLoaderMiddleware(DB, srv))
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }

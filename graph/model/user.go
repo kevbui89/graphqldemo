@@ -51,3 +51,9 @@ func (u *User) GenToken() (*AuthToken, error) {
 		ExpiredAt:   expiredAt,
 	}, nil
 }
+
+func (u *User) ComparePassword(password string) error {
+	bytePassword := []byte(password)
+	byteHashPassword := []byte(u.Password)
+	return bcrypt.CompareHashAndPassword(byteHashPassword, bytePassword)
+}

@@ -7,6 +7,6 @@ type Meetup struct {
 	UserID      string `json:"userId"`
 }
 
-// func (m *Meetup) IsOwner(user *User) bool {
-// 	return m.UserID == user.ID
-// }
+func (m *Meetup) IsOwner(user *User) bool {
+	return m.UserID == user.ID
+}

@@ -8,11 +8,6 @@ import (
 	"com.example/graphql/graph/model"
 )
 
-var (
-	ErrBadCredentials  = errors.New("email/password combination does not work")
-	ErrUnauthenticated = errors.New("unauthenticated")
-)
-
 // Register is the resolver for the register field.
 func (d *Domain) Register(ctx context.Context, input model.RegisterInput) (*model.AuthResponse, error) {
 	_, err := d.UsersRepo.GetUserByEmail(input.Email)
